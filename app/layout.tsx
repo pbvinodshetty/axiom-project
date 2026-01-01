@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Navbar } from './components/navbar/Navbar'
-import { FooterBar } from './components/footer/footerbar'
+import { Footerbar } from './components/footer/footerbar'
 
 
 
@@ -23,7 +23,7 @@ export default function RootLayout({
         <main className="pb-12">
           {children}
         </main>
-        <FooterBar />
+        <Footerbar />
         {children}
       </body>
     </html>

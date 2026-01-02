@@ -3,8 +3,6 @@ import './globals.css'
 import { Navbar } from './components/navbar/Navbar'
 import { Footerbar } from './components/footer/footerbar'
 
-
-
 export const metadata: Metadata = {
   title: 'AXIOM',
   description: 'Trading dashboard',
@@ -17,18 +15,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-black text-white antialiased">
+      {/* h-screen + flex-col + overflow-hidden makes the layout constant */}
+      <body className="h-screen overflow-hidden bg-black text-white antialiased flex flex-col">
+        
+        {/* Fixed Header */}
         <Navbar />
 
-        <main className="pb-12">
+        {/* flex-1: Fills the remaining space between Nav and Footer
+            overflow-hidden: Prevents the main page from having a scrollbar
+        */}
+        <main className="flex-1 overflow-hidden">
           {children}
         </main>
+
+        {/* Fixed Footer */}
         <Footerbar />
-        {children}
+        
+        {/* 🚨 THE SECOND {children} WAS REMOVED FROM HERE TO FIX THE DUPLICATION 🚨 */}
       </body>
     </html>
   )
 }
-
-
- 

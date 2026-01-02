@@ -29,8 +29,8 @@ const NAV_ITEMS = [
   'Rewards'
 ]
 
-const ITEM_WIDTH = 70
-const VISIBLE_ITEMS = 8
+const ITEM_WIDTH = 75
+const VISIBLE_ITEMS = 6.7
 const SCROLL_SPEED = 2
 
 /* =========================
@@ -64,7 +64,7 @@ export const NavLeft = memo(function NavLeft() {
   }
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-10">
       {/* LOGO — FIXED */}
       <div className="flex items-center gap-3">
         <Image

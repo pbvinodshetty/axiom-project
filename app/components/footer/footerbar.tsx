@@ -19,9 +19,9 @@ import {
 export const Footerbar = memo(function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-black/80 backdrop-blur whitespace-nowrap">
-      <div className="mx-auto flex h-12 max-w-[1440px] items-center px-3 text-sm text-white/80">
+      <div className="mx-auto flex h-12 max-w-[1440px] items-center px-3 py-3 text-sm text-white/80">
         {/* SHRINK-SAFE WRAPPER */}
-        <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+        <div className="flex min-w-0 h-10 flex-1 items-center overflow-hidden">
 
           {/* ================= SECTION 1 ================= */}
           <div className="flex shrink-0 items-center gap-2">

@@ -1,85 +1,160 @@
 'use client'
 
-import { Search, Info, Settings, LayoutGrid, Volume2, Target, Filter, ChevronDown } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  Search,
+  Info,
+  Settings,
+  LayoutGrid,
+  Volume2,
+  Filter,
+  ChevronDown,
+  ExternalLink,
+  Users,
+  Eye,
+  Crown
+} from 'lucide-react'
 
 /* =========================
-   COMPONENTS
+   DEFAULT IMAGE (INLINE)
 ========================= */
+const DEFAULT_IMAGE =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+    <rect width="100%" height="100%" rx="12" ry="12" fill="#111827"/>
+    <text x="50%" y="55%" font-size="18" fill="#34d399" text-anchor="middle" font-family="Arial">SOL</text>
+  </svg>
+`)
 
-// Represents one token card (e.g., AnalWarts, SOLAMA)
-function TokenCard({ name, mc, val, time, color = "blue" }: any) {
-  const mcColor = color === "blue" ? "text-blue-400" : "text-yellow-500";
-  
+/* =========================
+   MOCK DATA POOL
+========================= */
+const TOKEN_POOL = Array.from({ length: 60 }).map((_, i) => ({
+  id: i,
+  title: 'CAPTURED',
+  subtitle: `Token ${i + 1}`,
+  address: `${Math.random().toString(36).slice(2, 6)}...pump`,
+  mc: `$${(Math.random() * 5 + 3).toFixed(2)}K`,
+  volume: Math.floor(Math.random() * 900 + 100),
+  tx: Math.floor(Math.random() * 30),
+  holders: Math.floor(Math.random() * 200),
+  risk: Math.floor(Math.random() * 100),
+  time: `${Math.floor(Math.random() * 10) + 1}s`,
+}))
+
+/* =========================
+   TOKEN ROW
+========================= */
+function TokenRow({ token }: any) {
   return (
-    <div className="group relative mb-2 rounded-md border border-white/5 bg-[#0b0e14] p-3 transition-all hover:border-white/20">
-      <div className="flex justify-between items-start">
-        <div className="flex gap-3">
-          {/* Token Image Placeholder */}
-          <div className="h-12 w-12 rounded bg-gray-900 border border-white/10 flex items-center justify-center text-[10px] text-white/20">
-            IMG
-          </div>
-          <div>
-            <div className="flex items-center gap-1 font-bold text-[13px]">
-              {name} <span className="text-white/40 font-normal uppercase">{name}</span>
-            </div>
-            <div className="text-[11px] text-white/40 flex items-center gap-2">
-              <span>{time}</span>
-              <div className="flex gap-1 text-blue-400">
-                <Search size={10} /> <Info size={10} /> <Target size={10} />
-              </div>
-            </div>
-          </div>
+    <div
+      className="
+      grid grid-cols-[56px_1.6fr_1fr_auto]
+      gap-3 px-2 py-3
+      border-b border-white/5 last:border-b-0
+      hover:bg-white/[0.03] transition
+    "
+    >
+      {/* IMAGE */}
+      <div className="relative">
+        <div className="h-12 w-12 rounded-md overflow-hidden ring-2 ring-emerald-500/60">
+          <img src={DEFAULT_IMAGE} className="h-full w-full object-cover" />
         </div>
-        
-        <div className="text-right">
-          <div className="text-[10px] text-white/40">MC <span className={mcColor}>{mc}</span></div>
-          <div className="text-[10px] text-white/40 text-glow">V <span className="text-white">${val}</span></div>
-          <div className="text-[9px] text-white/30 uppercase mt-1">TX 2 —</div>
+        <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-emerald-500 border-2 border-[#0b0e14]" />
+      </div>
+
+      {/* NAME */}
+      <div className="min-w-0">
+        <div className="flex items-center gap-1 text-[14px] font-semibold leading-none">
+          {token.title}
+          <span className="text-white/40 font-normal">
+            {token.subtitle}
+          </span>
+          <ExternalLink size={12} className="text-white/30" />
+        </div>
+
+        <div className="text-[11px] text-white/40 mt-0.5">
+          {token.address}
+        </div>
+
+        <div className="mt-1.5 flex gap-4 text-[11px] text-white/50">
+          <span className="flex items-center gap-1">
+            <Users size={12} /> {token.holders}
+          </span>
+          <span className="flex items-center gap-1">
+            <Eye size={12} /> 0
+          </span>
+          <span className="flex items-center gap-1">
+            <Crown size={12} /> 0
+          </span>
         </div>
       </div>
 
-      {/* Stats Row */}
-      <div className="mt-3 flex items-center justify-between text-[10px]">
-        <div className="flex gap-3 text-emerald-400/80">
-          <span className="flex items-center gap-1">👤 10%</span>
-          <span className="flex items-center gap-1">🌐 10% 5mo</span>
+      {/* STATUS */}
+      <div className="flex items-center gap-3 text-[11px]">
+        <span className="text-emerald-400">🟢 0%</span>
+        <span className="text-emerald-400">👤 3%</span>
+        <span className="text-emerald-400">🌐 2mo</span>
+        <span className="text-rose-500">⛔ {token.risk}%</span>
+      </div>
+
+      {/* RIGHT */}
+      <div className="text-right text-[12px] leading-tight">
+        <div className="text-white/50">
+          MC <span className="text-sky-400 font-semibold">{token.mc}</span>
         </div>
-        <div className="flex gap-2 text-rose-500/80">
-          <span>🛑 10%</span>
-          <span className="text-emerald-400">📦 0%</span>
+        <div className="text-white/50">
+          V <span className="text-white">${token.volume}</span>
+        </div>
+        <div className="text-white/30 text-[11px] mt-0.5">
+          TX {token.tx}
         </div>
       </div>
     </div>
   )
 }
 
-// Represents one of the three main columns
-function DashboardColumn({ title, count }: { title: string; count: string }) {
+/* =========================
+   COLUMN
+========================= */
+function DashboardColumn({ title }: { title: string }) {
+  const [tokens, setTokens] = useState<any[]>([])
+
+  useEffect(() => {
+    const update = () => {
+      const shuffled = [...TOKEN_POOL].sort(() => 0.5 - Math.random())
+      setTokens(shuffled.slice(0, 10)) // ✅ 10 CARDS
+    }
+
+    update()
+    const interval = setInterval(update, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div className="flex flex-col border-r border-white/5 px-2 last:border-0">
-      <div className="mb-3 flex items-center justify-between px-1">
+    <div className="flex flex-col border-r border-white/5 last:border-0">
+      {/* HEADER */}
+      <div className="sticky top-0 z-10 flex items-center justify-between bg-[#0b0e14] px-3 py-2 border-b border-white/5">
         <div className="flex items-center gap-2">
-          <h2 className="text-[13px] font-bold text-white">{title}</h2>
-          <span className="text-[11px] text-white/40">⚡ {count}</span>
+          <h2 className="text-[15px] font-semibold">{title}</h2>
+          <span className="text-[11px] text-white/40">⚡ {tokens.length}</span>
         </div>
-        <div className="flex items-center gap-3 text-white/30">
-          <Filter size={12} className="hover:text-white cursor-pointer" />
-          <div className="flex gap-1 text-[10px] font-bold">
-            <span className="text-blue-500">P1</span>
-            <span>P2</span>
-            <span>P3</span>
-          </div>
-          <LayoutGrid size={12} className="hover:text-white cursor-pointer" />
+
+        <div className="flex items-center gap-3 text-white/40 text-[11px]">
+          <Filter size={14} />
+          <span className="text-blue-500 font-semibold">P1</span>
+          <span>P2</span>
+          <span>P3</span>
+          <LayoutGrid size={14} />
         </div>
       </div>
-      
-      {/* Scrollable Content Area */}
-      <div className="h-[calc(100vh-180px)] overflow-y-auto scrollbar-none pr-1">
-        <TokenCard name="AnalWarts" mc="$3.59K" val="385" time="0s" />
-        <TokenCard name="TikTok" mc="$614K" val="17K" time="17s" />
-        <TokenCard name="SOLAMA" mc="$46.1K" val="12K" time="3m" color="yellow" />
-        <TokenCard name="POOPCOIN" mc="$54.3K" val="13K" time="36s" color="yellow" />
-        <TokenCard name="GAMBLE" mc="$7.06K" val="5K" time="17s" />
+
+      {/* LIST */}
+      <div className="h-[calc(100vh-112px)] overflow-y-auto pulse-scroll">
+        {tokens.map((t) => (
+          <TokenRow key={`${t.id}-${Math.random()}`} token={t} />
+        ))}
       </div>
     </div>
   )
@@ -88,45 +163,38 @@ function DashboardColumn({ title, count }: { title: string; count: string }) {
 /* =========================
    MAIN PAGE
 ========================= */
-
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* Secondary Dashboard Header */}
-      <div className="flex h-12 items-center justify-between border-b border-white/5 bg-[#0b0e14]/50 px-6">
+      {/* TOP BAR */}
+      <div className="flex h-12 items-center justify-between border-b border-white/5 bg-[#0b0e14] px-6">
         <div className="flex items-center gap-2">
           <h1 className="text-[15px] font-bold">Pulse</h1>
-          <div className="flex items-center gap-1 rounded bg-purple-600/20 px-1.5 py-0.5 text-[10px] font-bold text-purple-400 ring-1 ring-purple-600/30">
-             SOL
-          </div>
-          <div className="h-4 w-4 rounded-full bg-yellow-500/20 p-0.5">
-             <div className="h-full w-full rounded-full bg-yellow-500" />
-          </div>
+          <span className="rounded bg-purple-600/20 px-2 py-0.5 text-[10px] font-bold text-purple-400">
+            SOL
+          </span>
+          <span className="h-3 w-3 rounded-full bg-yellow-400" />
         </div>
 
-        <div className="flex items-center gap-4">
-          <Info size={16} className="text-white/40 cursor-pointer" />
-          <button className="flex items-center gap-2 rounded bg-white/5 border border-white/10 px-3 py-1 text-[12px] hover:bg-white/10 transition">
-            <LayoutGrid size={14} />
-            Display
-            <ChevronDown size={12} />
+        <div className="flex items-center gap-4 text-white/60">
+          <Info size={16} />
+          <button className="flex items-center gap-2 rounded bg-white/5 px-3 py-1 text-[12px]">
+            <LayoutGrid size={14} /> Display <ChevronDown size={12} />
           </button>
-          <div className="flex gap-3 text-white/40">
-            <Settings size={16} />
-            <Volume2 size={16} />
-            <Search size={16} />
-          </div>
-          <div className="flex items-center gap-1 text-[12px] bg-white/5 rounded px-2 py-1 border border-white/10">
+          <Settings size={16} />
+          <Volume2 size={16} />
+          <Search size={16} />
+          <div className="rounded bg-white/5 px-2 py-1 text-[12px]">
             📑 1 🟢 0 <ChevronDown size={12} />
           </div>
         </div>
       </div>
 
-      {/* Grid Section */}
-      <div className="grid grid-cols-3 gap-0 p-4 pt-2">
-        <DashboardColumn title="New Pairs" count="0" />
-        <DashboardColumn title="Final Stretch" count="0" />
-        <DashboardColumn title="Migrated" count="0" />
+      {/* GRID */}
+      <div className="grid grid-cols-3 px-3 pt-2">
+        <DashboardColumn title="New Pairs" />
+        <DashboardColumn title="Final Stretch" />
+        <DashboardColumn title="Migrated" />
       </div>
     </main>
   )
